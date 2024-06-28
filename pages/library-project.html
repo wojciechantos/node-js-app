@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Library Project Page</title>
+</head>
+<body>
+<div id="app-container">
+    <dialog id="form-dialog">
+        <button id="close-form-dialog">X</button>
+        <form id="add-book-form" method="dialog">
+            <div>
+                <label for="form-input__title">Title:</label>
+                <input id="form-input__title" type="text" required>
+            </div>
+            <div>
+                <label for="form-input__author">Author:</label>
+                <input id="form-input__author" type="text" required>
+            </div>
+            <div>
+                <label for="form-input__pages">Number of pages:</label>
+                <input id="form-input__pages" type="text" required>
+            </div>
+            <div>
+                <label for="form-input__read">Read:</label>
+                <input id="form-input__read" type="checkbox" name="read">
+            </div>
+
+            <input id="submit-book-input" type="submit" value="Add">
+        </form>
+    </dialog>
+
+    <div class="header-wrapper">
+        <h1>My library</h1>
+        <button id="toggle-add-book-form">+ Add new book</button>
+    </div>
+
+    <ul id="books-list" class="books-list">
+        <li class="books-list__empty-list-placeholder"><p>Here your added books will be shown...</p></li>
+    </ul>
+
+</div>
+</body>
+<script>
+	const booksList = document.getElementById('books-list');
+	const formDialog = document.getElementById('form-dialog');
+	const addBookForm = document.getElementById('add-book-form');
+	const bookStatusItem = document.getElementById('form-input__read');
+	const closeFormDialogBtn = document.getElementById('close-form-dialog');
+	const openAddBookFormBtn = document.getElementById('toggle-add-book-form');
+	const emptyListPlaceholder = document.querySelector('.books-list__empty-list-placeholder');
+	let bookStatus = document.getElementById('form-input__read').checked;
+
+	let myLibrary = [{ title: 'Deep Work', author: 'Cal Newport', numberOfPages: '391', read: true }];
+
+	function updatePlaceholderVisibility() {
+		if (myLibrary.length > 0) {
+			emptyListPlaceholder.style.display = 'none';
+		} else {
+			emptyListPlaceholder.style.display = 'block';
+		}
+	}
+
+	function addListElement(book) {
+		let listElement = document.createElement('li');
+		let removeButton = document.createElement('button');
+		let toggleReadButton = document.createElement('button');
+		let bookDescription = document.createElement('p');
+
+		removeButton.textContent = 'Remove';
+		removeButton.classList.add('remove-book__button');
+		removeButton.addEventListener('click', () => {
+			let bookIndex = myLibrary.indexOf(book);
+			if (bookIndex > -1) {
+				myLibrary.splice(bookIndex, 1);
+				booksList.removeChild(listElement);
+				updatePlaceholderVisibility();
+			}
+		});
+
+		toggleReadButton.textContent = book.read ? 'Mark as unread' : 'Mark as read';
+		toggleReadButton.classList.add('toggle-read__button');
+		toggleReadButton.addEventListener('click', () => {
+			book.read = !book.read;
+			toggleReadButton.textContent = book.read ? 'Mark as unread' : 'Mark as read';
+			bookDescription.textContent = `Title: ${book.title} | Author: ${book.author} | Number of pages: ${book.numberOfPages} | Read: ${book.read ? 'yes' : 'no'}`;
+		});
+
+		listElement.appendChild(bookDescription);
+		bookDescription.textContent = `Title: ${book.title} | Author: ${book.author} | Number of pages: ${book.numberOfPages} | Read: ${book.read ? 'yes' : 'no'}`;
+		listElement.classList.add('books-list__item');
+
+		listElement.appendChild(removeButton);
+		listElement.appendChild(toggleReadButton);
+		booksList.appendChild(listElement);
+	}
+
+	function addBookToLibrary() {
+		const book = {
+			title: document.getElementById('form-input__title').value,
+			author: document.getElementById('form-input__author').value,
+			numberOfPages: document.getElementById('form-input__pages').value,
+			read: document.getElementById('form-input__read').checked,
+		};
+		myLibrary.push(book);
+		updatePlaceholderVisibility();
+		addListElement(book);
+	}
+
+	function loadBooksList() {
+		myLibrary.forEach((book) => addListElement(book));
+	}
+
+	function clearForm() {
+		document.getElementById('form-input__title').value = '';
+		document.getElementById('form-input__author').value = '';
+		document.getElementById('form-input__pages').value = '';
+		document.getElementById('form-input__read').checked = false;
+	}
+
+	bookStatusItem.addEventListener('click', (e) => {
+		if (e.target.checked) {
+			bookStatus = true;
+			return;
+		}
+		bookStatus = false;
+	});
+
+	openAddBookFormBtn.addEventListener('click', () => formDialog.show());
+
+	closeFormDialogBtn.addEventListener('click', () => {
+		clearForm();
+		formDialog.close();
+	});
+
+	addBookForm.addEventListener('submit', (e) => {
+		e.preventDefault();
+		addBookToLibrary();
+		clearForm();
+		formDialog.close();
+	});
+
+	loadBooksList();
+	updatePlaceholderVisibility();
+</script>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    #app-container {
+        gap: 16px;
+        display: flex;
+        width: 100vw;
+        padding: 24px;
+        color: #313638;
+        min-height: 100vh;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        background-color: #ACB0BD;
+    }
+
+    .books-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        padding: 24px;
+        max-width: 560px;
+        list-style: none;
+        border-radius: 8px;
+        background-color: #E0DFD5;
+        box-shadow: 2px 2px 12px #313638;
+    }
+
+    .books-list__item {
+        padding: 8px;
+        display: block;
+        border-radius: 4px;
+        border: 2px solid #313638;
+    }
+</style>
+</html>

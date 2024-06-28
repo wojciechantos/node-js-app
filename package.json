@@ -1,0 +1,16 @@
+{
+  "name": "nodejsapp",
+  "version": "1.0.0",
+  "description": "NodeJS app for TheOdinProject",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "develop": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Wojciech Antos",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.3"
+  }
+}
